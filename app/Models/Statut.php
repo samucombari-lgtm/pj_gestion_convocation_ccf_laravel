@@ -18,4 +18,8 @@ class Statut extends Model
 
     // Et on précise que le type de cette clé est du texte, pas un entier.
     protected $keyType = 'string';
+
+    // Colonnes autorisées dans Statut::create([...]) (page Paramétrage).
+    // Ici "code" y est, car c'est nous qui le choisissons (pas d'auto-incrément).
+    protected $fillable = ['code', 'nom', 'commentaire'];
 }

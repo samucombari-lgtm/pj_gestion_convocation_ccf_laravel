@@ -17,7 +17,7 @@
 
         @if(auth()->user()->hasRole('ADMIN'))
             <p><a href="{{ route('utilisateurs.index') }}">Gestion des utilisateurs</a></p>
-            <p><a href="#">Paramétrage (rôles, statuts, genres)</a></p>
+            <p><a href="{{ route('parametrage.index') }}">Paramétrage (rôles, statuts, genres)</a></p>
         @endif
 
         @if(auth()->user()->hasRole('GEST'))
