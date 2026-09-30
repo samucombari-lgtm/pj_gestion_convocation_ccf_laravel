@@ -7,6 +7,7 @@ use App\Http\Controllers\EpreuveController;
 use App\Http\Controllers\JuryController;
 use App\Http\Controllers\LieuController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\ParametrageController;
 use App\Http\Controllers\UtilisateurController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 /*
@@ -80,4 +81,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/utilisateurs', [UtilisateurController::class, 'store'])->name('utilisateurs.store');
     Route::get('/admin/utilisateurs/{utilisateur}/modifier', [UtilisateurController::class, 'edit'])->name('utilisateurs.edit');
     Route::post('/admin/utilisateurs/{utilisateur}/modifier', [UtilisateurController::class, 'update'])->name('utilisateurs.update');
+
+    // Pages ADMIN : paramétrage des tables de référence (étape 2/2)
+    // Une page qui liste tout, et un POST d'ajout par table (voir les
+    // explications en haut de ParametrageController). Pas de route de
+    // suppression : ces valeurs sont utilisées par des clés étrangères.
+    Route::get('/admin/parametrage', [ParametrageController::class, 'index'])->name('parametrage.index');
+    Route::post('/admin/parametrage/roles', [ParametrageController::class, 'storeRole'])->name('parametrage.roles.store');
+    Route::post('/admin/parametrage/statuts', [ParametrageController::class, 'storeStatut'])->name('parametrage.statuts.store');
+    Route::post('/admin/parametrage/genres', [ParametrageController::class, 'storeGenre'])->name('parametrage.genres.store');
 });
