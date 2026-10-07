@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\EpreuveController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JuryController;
 use App\Http\Controllers\LieuController;
 use App\Http\Controllers\MenuController;
@@ -17,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return redirect('/login');
-});
+// GET / : page d'accueil publique (présentation + Se connecter / S'inscrire).
+// HomeController redirige vers /menu si l'utilisateur est déjà connecté.
+Route::get('/', [HomeController::class, 'index'])->name('accueil');
 
 /*
 |--------------------------------------------------------------------------

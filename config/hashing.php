@@ -15,7 +15,7 @@ return [
     | Bcrypt Options
     |--------------------------------------------------------------------------
     |
-    | "verify" => false : DÉSACTIVE une vérification stricte que Laravel 13
+    | "verify" => false : DÉSACTIVE une vérification stricte que Laravel
     | fait en plus du hash lui-même : il regarde le préfixe du hash
     | ($2a$, $2b$, $2y$...) et refuse de continuer s'il ne reconnaît pas
     | EXACTEMENT "bcrypt" au sens de PHP. Or les hash de test.sql ont été
