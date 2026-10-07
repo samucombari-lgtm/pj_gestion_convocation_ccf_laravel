@@ -42,4 +42,14 @@ class User extends Authenticatable
     {
         return $this->utilisateur && $this->utilisateur->role->code === $code;
     }
+
+    // Décision du professeur : l'ancien rôle JURY est remplacé par deux
+    // rôles, JURY_ENS (jury enseignant) et JURY_PRO (jury professionnel).
+    // Les pages jury sont les mêmes pour les deux : plutôt que d'écrire
+    // hasRole('JURY_ENS') || hasRole('JURY_PRO') à chaque endroit (et
+    // risquer d'en oublier un), on regroupe le test ici, une seule fois.
+    public function isJury(): bool
+    {
+        return $this->hasRole('JURY_ENS') || $this->hasRole('JURY_PRO');
+    }
 }

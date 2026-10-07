@@ -14,7 +14,7 @@ class JuryController extends Controller
     // "Mon planning de jury" : les épreuves couvertes par mon ou mes panels.
     public function planning()
     {
-        if (! auth()->user()->hasRole('JURY')) {
+        if (! auth()->user()->isJury()) {
             abort(403);
         }
 
@@ -49,7 +49,7 @@ class JuryController extends Controller
     // (id_jury) est un des panels dont je fais partie.
     public function candidats()
     {
-        if (! auth()->user()->hasRole('JURY')) {
+        if (! auth()->user()->isJury()) {
             abort(403);
         }
 
