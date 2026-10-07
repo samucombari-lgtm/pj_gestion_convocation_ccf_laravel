@@ -15,45 +15,10 @@
 
     <p><a href="{{ route('utilisateurs.create') }}">+ Créer un utilisateur</a></p>
 
-    <table border="1" cellpadding="6" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Rôle</th>
-                <th>Statut</th>
-                <th>Genre</th>
-                <th>Classe</th>
-                <th>N° candidat</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($utilisateurs as $utilisateur)
-                <tr>
-                    <td>{{ $utilisateur->prenom }} {{ $utilisateur->nom }}</td>
-                    <td>{{ $utilisateur->compte?->email }}</td>
-                    <td>{{ $utilisateur->role->nom }}</td>
-                    <td>
-                        {{ $utilisateur->statut->nom }}
-                        {{-- Repère visuel simple pour les comptes bannis,
-                             sans rien changer côté base : juste du texte
-                             en rouge sur cette page. --}}
-                        @if($utilisateur->code_statut === 'B')
-                            <span style="color: red;">⚠</span>
-                        @endif
-                    </td>
-                    <td>{{ $utilisateur->genre->nom }}</td>
-                    <td>{{ $utilisateur->classe ?? '—' }}</td>
-                    <td>{{ $utilisateur->numero_candidat ?? '—' }}</td>
-                    <td><a href="{{ route('utilisateurs.edit', $utilisateur) }}">Modifier</a></td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8">Aucun utilisateur pour le moment.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+    {{-- Le tableau des comptes est un composant Livewire (recherche,
+         filtre "en attente", boutons de statut, changement de rôle sans
+         recharger la page). Code : app/Livewire/GestionComptes.php et
+         resources/views/livewire/gestion-comptes.blade.php --}}
+    <livewire:gestion-comptes />
 </body>
 </html>

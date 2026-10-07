@@ -25,19 +25,16 @@ class UtilisateurController extends Controller
         }
     }
 
-    // Liste de tous les utilisateurs.
+    // Page "Gestion des utilisateurs". La liste elle-même (recherche,
+    // filtre, boutons de statut, changement de rôle) est gérée par le
+    // composant Livewire App\Livewire\GestionComptes, inclus dans la vue :
+    // le contrôleur se contente donc de vérifier le rôle et d'afficher
+    // la page.
     public function index()
     {
         $this->ensureAdmin();
 
-        // with(...) précharge role/statut/genre/compte (le compte de
-        // connexion, pour l'email) en quelques requêtes groupées, pour
-        // éviter le N+1 dans la vue.
-        $utilisateurs = Utilisateur::with(['role', 'statut', 'genre', 'compte'])
-            ->orderBy('nom')
-            ->get();
-
-        return view('admin.utilisateurs.index', ['utilisateurs' => $utilisateurs]);
+        return view('admin.utilisateurs.index');
     }
 
     // Formulaire de création.
@@ -154,6 +151,21 @@ class UtilisateurController extends Controller
             'code_statut' => ['required', 'exists:mcd_statuts,code'],
             'code_genre' => ['required', 'exists:mcd_genres,code'],
         ]);
+
+        // Même protection que dans le composant Livewire GestionComptes :
+        // l'administrateur connecté ne peut ni quitter le statut Actif, ni
+        // s'enlever le rôle ADMIN, sinon il se bloquerait lui-même. Sans
+        // ce contrôle ici aussi, la protection pourrait être contournée en
+        // passant par ce formulaire "Modifier".
+        if ((int) $utilisateur->id === (int) auth()->id()) {
+            $roleChoisi = Role::find($data['id_role']);
+
+            if ($data['code_statut'] !== 'A' || $roleChoisi?->code !== 'ADMIN') {
+                return back()
+                    ->withErrors(['code_statut' => 'Vous ne pouvez pas modifier votre propre statut ni votre propre rôle administrateur.'])
+                    ->withInput();
+            }
+        }
 
         $utilisateur->update($data);
 
