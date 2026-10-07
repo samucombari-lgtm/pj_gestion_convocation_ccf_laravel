@@ -1,49 +1,56 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Menu</title>
-</head>
-<body>
-    {{-- auth()->user() renvoie l'utilisateur connecté (le Model User),
-         rempli automatiquement par Laravel grâce à la session créée
-         lors de Auth::attempt() dans LoginController. --}}
+{{-- Page d'accueil de l'utilisateur connecté (route "menu").
+     Elle utilise le layout commun : la barre de menu et le pied de page
+     viennent de layouts/app.blade.php. Ici, on ne met que le contenu. --}}
+@extends('layouts.app')
+
+@section('title', 'Accueil')
+
+@section('content')
+    {{-- auth()->user() renvoie l'utilisateur connecté (le modèle User). --}}
     <h1>Bonjour {{ auth()->user()->name }}</h1>
+    <p class="remarque">Que souhaitez-vous faire ?</p>
 
-    <nav>
-        {{-- Chaque bloc @if n'affiche ses liens QUE si hasRole() renvoie
-             true pour ce code de rôle. hasRole() est la méthode qu'on a
-             écrite dans User.php tout à l'heure. --}}
-
-        @if(auth()->user()->hasRole('ADMIN'))
-            <p><a href="{{ route('utilisateurs.index') }}">Gestion des utilisateurs</a></p>
-            <p><a href="{{ route('parametrage.index') }}">Paramétrage (rôles, statuts, genres)</a></p>
+    {{-- Raccourcis en cartes. Chaque bloc @if n'affiche ses cartes QUE
+         pour le bon rôle (mêmes liens que la barre de menu). --}}
+    <div class="raccourcis">
+        @if (auth()->user()->hasRole('ADMIN'))
+            <a class="card" href="{{ route('utilisateurs.index') }}">
+                <strong>Gestion des comptes</strong>
+                Rechercher, activer, désactiver ou bannir un compte, changer un rôle.
+            </a>
+            <a class="card" href="{{ route('parametrage.index') }}">
+                <strong>Paramétrage</strong>
+                Rôles, statuts et genres.
+            </a>
         @endif
 
-        @if(auth()->user()->hasRole('GEST'))
-            <p><a href="{{ route('epreuves.index') }}">Créer une session d'épreuves</a></p>
-            {{-- On réutilise la même liste d'épreuves : chaque ligne a un
-                 lien "Affecter un jury" (voir gestion/epreuves/index.blade.php),
-                 pas besoin d'une 2e liste séparée juste pour ça. --}}
-            <p><a href="{{ route('epreuves.index') }}">Affecter les jurys</a></p>
-            {{-- Même chose : "Voir les convocations" est un lien par
-                 ligne dans la liste des épreuves. --}}
-            <p><a href="{{ route('epreuves.index') }}">Envoyer les convocations</a></p>
+        @if (auth()->user()->hasRole('GEST'))
+            <a class="card" href="{{ route('epreuves.index') }}">
+                <strong>Liste des épreuves</strong>
+                Affecter un jury et voir les convocations de chaque épreuve.
+            </a>
+            <a class="card" href="{{ route('epreuves.create') }}">
+                <strong>Créer une session d'épreuves</strong>
+                Nouvelle épreuve, avec ajout d'un lieu si besoin.
+            </a>
         @endif
 
-        @if(auth()->user()->hasRole('CAND'))
-            <p><a href="{{ route('convocation') }}">Ma convocation</a></p>
+        @if (auth()->user()->hasRole('CAND'))
+            <a class="card" href="{{ route('convocation') }}">
+                <strong>Ma convocation</strong>
+                Date, heure, lieu et jury de chacune de vos épreuves.
+            </a>
         @endif
 
-        @if(auth()->user()->isJury())
-            <p><a href="{{ route('jury.planning') }}">Mon planning de jury</a></p>
-            <p><a href="{{ route('jury.candidats') }}">Mes candidats à évaluer</a></p>
+        @if (auth()->user()->isJury())
+            <a class="card" href="{{ route('jury.planning') }}">
+                <strong>Mon planning</strong>
+                Les épreuves pour lesquelles vous êtes membre d'un jury.
+            </a>
+            <a class="card" href="{{ route('jury.candidats') }}">
+                <strong>Mes candidats à évaluer</strong>
+                Horaire, candidat et épreuve de chaque passage.
+            </a>
         @endif
-    </nav>
-
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">Déconnexion</button>
-    </form>
-</body>
-</html>
+    </div>
+@endsection

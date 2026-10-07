@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Mon planning de jury</title>
-</head>
-<body>
-    <h1>Mon planning de jury</h1>
+@extends('layouts.app')
 
-    <p><a href="{{ route('menu') }}">&larr; Retour au menu</a></p>
+@section('title', 'Mon planning de jury')
+
+@section('content')
+    <h1>Mon planning de jury</h1>
 
     {{-- $epreuves regroupe déjà les épreuves de TOUS les panels dont je
          fais partie (voir JuryController::planning) : pas besoin de les
          séparer par panel ici, la vue reste simple. --}}
     @forelse ($epreuves as $epreuve)
-        <section style="border: 1px solid #ccc; margin-bottom: 1em; padding: 1em;">
+        <section class="card">
             <h2>{{ $epreuve->nom }}</h2>
 
             <p>
@@ -36,5 +32,4 @@
     @empty
         <p>Aucune épreuve ne vous est affectée pour le moment.</p>
     @endforelse
-</body>
-</html>
+@endsection

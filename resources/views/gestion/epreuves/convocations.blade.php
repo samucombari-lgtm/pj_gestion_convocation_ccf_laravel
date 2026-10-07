@@ -1,20 +1,22 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Convocations - {{ $epreuve->nom }}</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title')
+    Convocations - {{ $epreuve->nom }}
+@endsection
+
+@section('content')
     <h1>Convocations : {{ $epreuve->nom }} ({{ $epreuve->code }})</h1>
 
     {{-- window.print() ouvre juste la boîte de dialogue d'impression du
          navigateur : c'est tout ce qu'on demande ("prête à être imprimée"),
          pas besoin de vrai envoi d'email pour l'instant. Seule ligne de
-         JavaScript de toute l'appli, et volontairement minimale. --}}
+         JavaScript de toute l'appli, et volontairement minimale.
+         À l'impression, la barre de menu et les boutons sont cachés
+         (partie "Impression" de style.css). --}}
     <p>
         <a href="{{ route('epreuves.index') }}">&larr; Retour à la liste des épreuves</a>
         &nbsp;|&nbsp;
-        <button type="button" onclick="window.print()">Imprimer cette page</button>
+        <button type="button" class="btn" onclick="window.print()">Imprimer cette page</button>
     </p>
 
     <p>
@@ -35,10 +37,10 @@
          on ne l'invente pas, et il n'y a pas de bouton "Marquer comme
          envoyé" - un tel bouton ne pourrait rien enregistrer de
          permanent et donnerait une fausse impression de suivi. --}}
-    <p><em>Cette page affiche le contenu des convocations à titre de consultation/impression. Elle ne trace pas d'état "envoyé" (aucune colonne prévue à cet effet en base).</em></p>
+    <p class="remarque"><em>Cette page affiche le contenu des convocations à titre de consultation/impression. Elle ne trace pas d'état "envoyé" (aucune colonne prévue à cet effet en base).</em></p>
 
     <h2>Convocations candidats</h2>
-    <table border="1" cellpadding="6" cellspacing="0">
+    <table class="table">
         <thead>
             <tr>
                 <th>Candidat</th>
@@ -67,7 +69,7 @@
 
     <h2>Convocations jurys</h2>
     @forelse ($panels as $panel)
-        <section style="border: 1px solid #ccc; margin-bottom: 1em; padding: 1em;">
+        <section class="card">
             <h3>{{ $panel->nom }} ({{ $panel->code }})</h3>
 
             <p>
@@ -79,7 +81,7 @@
                  mémoire la liste déjà chargée plus haut, plutôt que de
                  refaire une requête SQL par panel. --}}
             <p><strong>Candidats à évaluer :</strong></p>
-            <table border="1" cellpadding="6" cellspacing="0">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Candidat</th>
@@ -103,5 +105,4 @@
     @empty
         <p>Aucun panel de jury affecté à cette épreuve pour le moment.</p>
     @endforelse
-</body>
-</html>
+@endsection

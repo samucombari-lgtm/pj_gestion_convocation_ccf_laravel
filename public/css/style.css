@@ -1,0 +1,541 @@
+/* ==========================================================================
+   style.css — feuille de style unique de l'application
+   Écrite à la main, sans bibliothèque ni outil de compilation.
+   Chargée dans les layouts avec : asset('css/style.css')
+   (le dossier public/ est la racine du site).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Couleurs utilisées partout
+   Les "variables CSS" (--nom) permettent de changer une couleur à un seul
+   endroit : on les utilise ensuite avec var(--nom).
+   -------------------------------------------------------------------------- */
+:root {
+    --fond: #f3f4f6;          /* gris très clair : fond des pages */
+    --blanc: #ffffff;
+    --texte: #1f2937;         /* gris très foncé : texte principal */
+    --texte-doux: #6b7280;    /* gris moyen : textes secondaires */
+    --bordure: #d1d5db;
+
+    --barre: #1f2937;         /* fond sombre de la barre de menu */
+    --barre-survol: #374151;
+
+    --bleu: #2563eb;          /* boutons principaux, liens */
+    --bleu-fonce: #1d4ed8;
+    --rouge: #dc2626;         /* boutons dangereux (bannir...), erreurs */
+    --rouge-fonce: #b91c1c;
+
+    --succes-fond: #dcfce7;  --succes-texte: #166534;
+    --erreur-fond: #fee2e2;  --erreur-texte: #991b1b;
+    --alerte-fond: #fef3c7;  --alerte-texte: #92400e;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base de la page
+   -------------------------------------------------------------------------- */
+* {
+    box-sizing: border-box;   /* la largeur d'un bloc inclut ses marges internes */
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--texte);
+    background: var(--fond);
+    /* La page est une colonne : barre en haut, contenu, pied de page en bas.
+       min-height: 100vh = au moins la hauteur de l'écran, pour que le pied
+       de page reste en bas même sur une page presque vide. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--bleu);
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 1.6rem;
+}
+
+h2 {
+    font-size: 1.3rem;
+    margin-top: 1.8rem;
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. Barre de menu (en-tête) — partials/menu.blade.php
+   -------------------------------------------------------------------------- */
+.navbar {
+    background: var(--barre);
+    color: var(--blanc);
+    display: flex;              /* éléments alignés sur une ligne */
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.6rem 1.5rem;
+    flex-wrap: wrap;            /* passe à la ligne sur un petit écran */
+}
+
+/* Nom de l'application, à gauche */
+.navbar .marque {
+    color: var(--blanc);
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+/* Liste des liens du menu */
+.navbar .liens {
+    list-style: none;           /* pas de puces */
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+}
+
+/* Un lien du menu, ou le titre d'un menu déroulant (<summary>) */
+.navbar .liens > li > a,
+.navbar summary {
+    display: block;
+    color: var(--blanc);
+    text-decoration: none;
+    padding: 0.45rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.navbar .liens > li > a:hover,
+.navbar summary:hover,
+.navbar .actif {
+    background: var(--barre-survol);
+}
+
+/* Partie droite : nom de l'utilisateur + bouton Déconnexion.
+   margin-left: auto pousse ce bloc tout à droite de la barre. */
+.navbar .utilisateur {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.navbar .utilisateur form {
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Menus déroulants avec <details>/<summary> (sans JavaScript)
+   <details> est une balise HTML qui s'ouvre et se ferme toute seule au clic
+   sur son <summary>. On place la liste en "position: absolute" pour qu'elle
+   s'affiche par-dessus la page, sous le titre.
+   -------------------------------------------------------------------------- */
+.deroulant {
+    position: relative;         /* repère pour placer la liste juste dessous */
+}
+
+/* On enlève le petit triangle par défaut du navigateur... */
+.deroulant summary {
+    list-style: none;
+}
+.deroulant summary::-webkit-details-marker {
+    display: none;
+}
+/* ...et on ajoute notre propre flèche après le texte. */
+.deroulant summary::after {
+    content: " ▾";
+}
+
+.deroulant ul {
+    position: absolute;
+    top: 100%;                  /* juste sous le titre */
+    left: 0;
+    z-index: 10;                /* au-dessus du contenu de la page */
+    min-width: 230px;
+    list-style: none;
+    margin: 0.3rem 0 0;
+    padding: 0.3rem 0;
+    background: var(--blanc);
+    border: 1px solid var(--bordure);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.deroulant ul a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--texte);
+    text-decoration: none;
+}
+
+.deroulant ul a:hover {
+    background: var(--fond);
+}
+
+/* --------------------------------------------------------------------------
+   5. Zone de contenu et pied de page — layouts/app.blade.php
+   -------------------------------------------------------------------------- */
+.contenu {
+    flex: 1;                    /* prend toute la hauteur libre (pied en bas) */
+    width: 100%;
+    max-width: 1100px;          /* contenu centré, pas trop large */
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--blanc);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Variante plus large, pour les pages avec un grand tableau (gestion des
+   comptes). Une page la demande avec @section('largeur', 'contenu-large'),
+   voir layouts/app.blade.php. */
+.contenu-large {
+    max-width: 1200px;
+}
+
+.pied {
+    text-align: center;
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+    padding: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   6. Boutons
+   .btn = bouton blanc avec bordure ; on ajoute .btn-primary (bleu),
+   .btn-secondaire (gris) ou .btn-danger (rouge).
+   Fonctionne sur <button> comme sur un lien <a> : police, hauteur de
+   ligne et alignement sont fixés ici pour que les deux aient exactement
+   la même taille (un <button> n'hérite pas de la police de la page).
+   -------------------------------------------------------------------------- */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--bordure);
+    border-radius: 4px;
+    background: var(--blanc);
+    color: var(--texte);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-decoration: none;
+    vertical-align: middle;
+    white-space: nowrap;        /* le texte d'un bouton reste sur une ligne */
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--fond);
+}
+
+.btn-primary {
+    background: var(--bleu);
+    border-color: var(--bleu);
+    color: var(--blanc);
+}
+
+.btn-primary:hover {
+    background: var(--bleu-fonce);
+}
+
+.btn-danger {
+    background: var(--rouge);
+    border-color: var(--rouge);
+    color: var(--blanc);
+}
+
+.btn-danger:hover {
+    background: var(--rouge-fonce);
+}
+
+.btn-secondaire {
+    background: var(--texte-doux);
+    border-color: var(--texte-doux);
+    color: var(--blanc);
+}
+
+.btn-secondaire:hover {
+    background: #4b5563;
+}
+
+/* Petit bouton, pour les actions dans un tableau : même hauteur et même
+   taille de texte pour tous (qu'ils soient <a> ou <button>). */
+.btn-petit {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+/* Groupe de boutons d'une ligne de tableau (colonne "Actions") :
+   les boutons côte à côte (flex), espacés (gap), jamais empilés (nowrap). */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   7. Messages (succès, erreur, avertissement)
+   -------------------------------------------------------------------------- */
+.alert {
+    padding: 0.7rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.alert-success {
+    background: var(--succes-fond);
+    color: var(--succes-texte);
+}
+
+.alert-error {
+    background: var(--erreur-fond);
+    color: var(--erreur-texte);
+}
+
+.alert-warning {
+    background: var(--alerte-fond);
+    color: var(--alerte-texte);
+    font-weight: bold;
+}
+
+/* Erreur de validation affichée sous un champ de formulaire */
+.field-error {
+    display: block;
+    color: var(--rouge);
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+/* Texte rouge simple (ex. le symbole ⚠ d'un compte banni) */
+.text-danger {
+    color: var(--rouge);
+}
+
+/* Texte gris pour les remarques */
+.remarque {
+    color: var(--texte-doux);
+}
+
+/* --------------------------------------------------------------------------
+   8. Tableaux (classe .table)
+   -------------------------------------------------------------------------- */
+.table {
+    width: 100%;
+    border-collapse: collapse;  /* une seule ligne entre deux cellules */
+    margin: 1rem 0;
+    font-size: 0.9rem;          /* texte un peu plus petit : tableau compact */
+}
+
+.table th,
+.table td {
+    padding: 0.35rem 0.6rem;    /* peu de marge en haut/bas : lignes basses */
+    border-bottom: 1px solid var(--bordure);
+    text-align: left;
+    vertical-align: middle;     /* texte et boutons centrés verticalement */
+}
+
+/* Cellule qui ne doit pas passer sur 2 lignes (nom, email, date...). */
+.nowrap {
+    white-space: nowrap;
+}
+
+/* Conteneur d'un grand tableau : si la fenêtre est trop étroite, c'est
+   le tableau qui défile de gauche à droite (overflow-x: auto), au lieu
+   de déborder et d'élargir toute la page. */
+.table-defilement {
+    overflow-x: auto;
+}
+
+.table th {
+    background: var(--fond);
+    white-space: nowrap;        /* titres de colonnes sur une seule ligne */
+}
+
+/* Une ligne sur deux légèrement grisée, pour suivre la ligne des yeux */
+.table tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+/* --------------------------------------------------------------------------
+   9. Formulaires — la même structure sur toutes les pages :
+
+   <form class="form">                      formulaire en colonne, centré
+       <div class="form-group">             un champ = un groupe
+           <label for="nom">Nom :</label>   étiquette au-dessus
+           <input id="nom" name="nom">
+           <span class="field-error">…</span>   erreur sous le champ
+       </div>
+       <div class="form-actions">           ligne des boutons
+           <button class="btn btn-primary">Valider</button>
+       </div>
+   </form>
+   -------------------------------------------------------------------------- */
+
+/* Le formulaire : une colonne de groupes, largeur limitée, centrée dans
+   la zone de contenu (margin auto à gauche et à droite). */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;                  /* espace identique entre deux champs */
+    max-width: 520px;
+    margin: 1.5rem auto;
+}
+
+/* Un champ : l'étiquette, puis le champ, puis l'erreur éventuelle. */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+/* TOUS les champs de saisie ont la même apparence : même largeur, même
+   hauteur, même bordure. */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="datetime-local"],
+select,
+textarea {
+    width: 100%;
+    height: 2.6rem;             /* même hauteur pour input et select */
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--bordure);
+    border-radius: 4px;
+    background: var(--blanc);
+    color: var(--texte);
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+/* Une zone de texte sur plusieurs lignes doit pouvoir être plus haute. */
+textarea {
+    height: auto;
+    min-height: 6rem;
+}
+
+/* Même état au focus pour tous les champs : contour bleu. */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--bleu);
+    outline-offset: 0;
+    border-color: var(--bleu);
+}
+
+/* Ligne des boutons, en bas du formulaire. */
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+/* Case à cocher : la case et son texte sur la même ligne, texte normal. */
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: normal;
+}
+
+.form-check input {
+    width: auto;
+    height: auto;
+}
+
+/* Zone de recherche et de filtres au-dessus d'un tableau (gestion des
+   comptes) : mêmes groupes que les formulaires, mais alignée à gauche,
+   juste au-dessus du tableau qu'elle filtre. */
+.filtres {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-width: 520px;
+    margin: 1rem 0;
+}
+
+/* Les listes déroulantes DANS un tableau gardent leur taille naturelle
+   (sinon elles prendraient toute la largeur de la cellule). */
+.table select,
+.table input {
+    width: auto;
+    height: auto;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.85rem;         /* même taille que les petits boutons */
+}
+
+/* --------------------------------------------------------------------------
+   10. Cartes : blocs encadrés (convocations, planning, accueil...)
+   -------------------------------------------------------------------------- */
+.card {
+    border: 1px solid var(--bordure);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    background: var(--blanc);
+}
+
+.card h2,
+.card h3 {
+    margin-top: 0;
+}
+
+/* Grille de raccourcis de la page d'accueil (/menu) : autant de colonnes
+   de 250px minimum que la largeur le permet. */
+.raccourcis {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Une carte qui est aussi un lien : toute la carte est cliquable */
+a.card {
+    display: block;
+    color: var(--texte);
+    text-decoration: none;
+    border-left: 4px solid var(--bleu);
+}
+
+a.card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+a.card strong {
+    display: block;
+    color: var(--bleu);
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+/* --------------------------------------------------------------------------
+   11. Impression (bouton "Imprimer cette page" des convocations)
+   On cache la barre de menu, le pied de page et les boutons sur papier.
+   -------------------------------------------------------------------------- */
+@media print {
+    .navbar,
+    .pied,
+    .btn {
+        display: none;
+    }
+
+    .contenu {
+        box-shadow: none;
+        margin: 0;
+        max-width: none;
+    }
+}
