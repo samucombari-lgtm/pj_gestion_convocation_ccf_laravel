@@ -35,7 +35,7 @@
             <p><a href="{{ route('convocation') }}">Ma convocation</a></p>
         @endif
 
-        @if(auth()->user()->hasRole('JURY'))
+        @if(auth()->user()->isJury())
             <p><a href="{{ route('jury.planning') }}">Mon planning de jury</a></p>
             <p><a href="{{ route('jury.candidats') }}">Mes candidats à évaluer</a></p>
         @endif
