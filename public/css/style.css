@@ -523,6 +523,89 @@ a.card strong {
 }
 
 /* --------------------------------------------------------------------------
+   12. Pages publiques — layouts/auth.blade.php
+   (accueil visiteur, connexion, inscription, mot de passe oublié,
+   nouveau mot de passe) : une carte blanche centrée sur fond clair.
+   -------------------------------------------------------------------------- */
+
+/* La carte : centrée (margin auto), 440 px au maximum. */
+.carte-auth {
+    width: calc(100% - 2rem);   /* sur téléphone : 1rem de marge de chaque côté */
+    max-width: 440px;
+    margin: 3rem auto 1rem;
+    padding: 2rem;
+    background: var(--blanc);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Le pied de page des pages publiques reste en bas de l'écran
+   (margin-top: auto prend tout l'espace libre au-dessus de lui). */
+.page-auth .pied {
+    margin-top: auto;
+}
+
+/* Carte plus large pour l'inscription (formulaire plus long). */
+.carte-large {
+    max-width: 520px;
+}
+
+/* Nom de l'application, en haut de la carte. */
+.marque-auth {
+    margin: 0 0 1rem;
+    text-align: center;
+    color: var(--bleu);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.carte-auth h1 {
+    text-align: center;
+    font-size: 1.4rem;
+}
+
+/* Dans la carte, le formulaire prend toute la largeur de la carte (la
+   carte limite déjà la largeur). */
+.carte-auth .form {
+    max-width: none;
+    margin: 1rem 0;
+}
+
+/* Bouton pleine largeur (boutons des pages publiques). */
+.btn-bloc {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Liens secondaires sous un formulaire ("Mot de passe oublié ?"...),
+   centrés, l'un sous l'autre. */
+.liens-secondaires {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+/* Boutons de l'accueil visiteur, l'un sous l'autre. */
+.boutons-accueil {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+/* Petit écran (téléphone) : moins de marges autour et dans la carte. */
+@media (max-width: 480px) {
+    .carte-auth {
+        margin-top: 1rem;
+        padding: 1.25rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
    11. Impression (bouton "Imprimer cette page" des convocations)
    On cache la barre de menu, le pied de page et les boutons sur papier.
    -------------------------------------------------------------------------- */
