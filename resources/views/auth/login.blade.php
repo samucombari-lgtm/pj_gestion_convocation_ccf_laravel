@@ -7,6 +7,13 @@
 <body>
     <h1>Connexion</h1>
 
+    {{-- Message d'information envoyé avec ->with('status', ...), par
+         exemple après une inscription ("Compte créé, en attente de
+         validation par un administrateur"). --}}
+    @if (session('status'))
+        <p style="color:green">{{ session('status') }}</p>
+    @endif
+
     {{-- $errors est une variable que Laravel remplit automatiquement
          quand back()->withErrors([...]) a été appelé dans le Controller.
          S'il n'y a pas d'erreur, ce bloc ne s'affiche simplement pas. --}}

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\EpreuveController;
@@ -28,14 +27,15 @@ Route::get('/', [HomeController::class, 'index'])->name('accueil');
 |--------------------------------------------------------------------------
 */
 
-// GET /login : affiche le formulaire de connexion
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-
-// POST /login : traite l'envoi du formulaire (email + mot de passe)
-Route::post('/login', [LoginController::class, 'login']);
-
-// POST /logout : déconnexion (jamais en GET, pour des raisons de sécurité)
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Les routes de connexion, déconnexion et inscription sont fournies par
+// Laravel Fortify (configuré dans app/Providers/FortifyServiceProvider.php
+// et config/fortify.php), on ne les déclare donc plus ici :
+//   GET  /login     (nom "login")    : formulaire de connexion (auth.login)
+//   POST /login                      : vérifie email + mot de passe + statut
+//   POST /logout    (nom "logout")   : déconnexion, puis retour sur "/"
+//   GET  /register  (nom "register") : formulaire d'inscription (auth.register)
+//   POST /register                   : crée le compte (CAND, statut 'I')
+// "php artisan route:list" affiche toutes ces routes.
 
 /*
 |--------------------------------------------------------------------------
