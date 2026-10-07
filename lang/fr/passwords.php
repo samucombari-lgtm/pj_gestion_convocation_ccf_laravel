@@ -1,7 +1,10 @@
 <?php
 
 // Messages de la réinitialisation du mot de passe ("mot de passe oublié"),
-// utilisés par Fortify (la page elle-même arrivera à l'étape suivante).
+// affichés par Fortify sur les pages forgot-password et login.
+// Le TEXTE de l'e-mail envoyé (objet, phrases, bouton) est traduit, lui,
+// dans lang/fr.json : Laravel y cherche les phrases anglaises écrites
+// telles quelles dans son code (ex. "Reset Password Notification").
 
 return [
 

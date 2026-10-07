@@ -48,6 +48,17 @@ class FortifyServiceProvider extends ServiceProvider
             'genres' => Genre::orderBy('nom')->get(),
         ]));
 
+        // GET /forgot-password (nommée "password.request") : saisie de
+        // l'e-mail pour recevoir un lien de réinitialisation.
+        Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
+
+        // GET /reset-password/{token} (nommée "password.reset") : page
+        // ouverte depuis le lien de l'e-mail. On transmet la requête à la
+        // vue pour qu'elle lise le jeton (dans l'URL) et l'e-mail (?email=).
+        Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', [
+            'request' => $request,
+        ]));
+
         // Fortify enregistre TOUJOURS la route /user/confirm-password
         // ("confirmez votre mot de passe avant une action sensible"), même
         // si on ne s'en sert pas. Sans vue associée, elle plantait (erreur

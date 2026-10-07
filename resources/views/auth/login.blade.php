@@ -41,5 +41,8 @@
 
         <button type="submit">Se connecter</button>
     </form>
+
+    {{-- Lien vers la page "mot de passe oublié" fournie par Fortify. --}}
+    <p><a href="{{ route('password.request') }}">Mot de passe oublié ?</a></p>
 </body>
 </html>
