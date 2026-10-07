@@ -82,7 +82,7 @@
             @endif
             @if($utilisateur->code_statut === 'B')
                 <span class="field-error">
-                    ⚠ Ce compte est actuellement banni. Limite connue : la connexion n'est pas encore bloquée pour un compte banni (à faire dans une étape ultérieure).
+                    ⚠ Ce compte est actuellement banni : sa connexion est refusée avec le message « Ce compte est bloqué. ».
                 </span>
             @endif
         </div>
