@@ -95,7 +95,11 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            // Table des jetons "mot de passe oublié". Toutes les tables du
+            // projet sont préfixées "mcd_" : on utilise donc
+            // mcd_password_reset_tokens (même structure que la table
+            // standard de Laravel : email, token, created_at).
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'mcd_password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
         ],
