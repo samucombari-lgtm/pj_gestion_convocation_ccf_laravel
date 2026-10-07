@@ -98,8 +98,8 @@ français : fichiers `lang/fr/` et `lang/fr.json`.
    2. `init.sql` — données de référence (5 rôles, statuts, genres, compte
       admin)
    3. `test.sql` — jeu de données réaliste pour le développement
-   4. `ajout_password_reset.sql` — table technique `password_reset_tokens`,
-      nécessaire à la fonction « Mot de passe oublié »
+   4. `ajout_password_reset.sql` — crée `mcd_password_reset_tokens` si elle
+      n'existe pas
 
    Ces scripts sont fournis séparément : ils ne sont pas dans le dépôt.
 5. Lancer le serveur de développement :
