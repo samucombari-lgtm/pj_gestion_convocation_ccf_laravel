@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Ma convocation</title>
-</head>
-<body>
-    <h1>Mes convocations</h1>
+@extends('layouts.app')
 
-    <p><a href="{{ route('menu') }}">&larr; Retour au menu</a></p>
+@section('title', 'Ma convocation')
+
+@section('content')
+    <h1>Mes convocations</h1>
 
     {{-- @forelse affiche le bloc pour chaque convocation, ET gère tout
          seul le cas où la liste est vide grâce à @empty (sans avoir à
          écrire un @if(count($convocations) > 0) nous-mêmes). --}}
     @forelse ($convocations as $convocation)
-        <section style="border: 1px solid #ccc; margin-bottom: 1em; padding: 1em;">
+        <section class="card">
             <h2>{{ $convocation->epreuve->nom }}</h2>
 
             <p>
@@ -40,5 +36,4 @@
     @empty
         <p>Vous n'avez aucune convocation pour le moment.</p>
     @endforelse
-</body>
-</html>
+@endsection
