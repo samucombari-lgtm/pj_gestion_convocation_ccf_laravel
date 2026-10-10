@@ -174,6 +174,7 @@ return [
         'classe' => 'classe',
         'email' => 'adresse e-mail',
         'password' => 'mot de passe',
+        'current_password' => 'mot de passe actuel',
         'password_confirmation' => 'confirmation du mot de passe',
         'numero_candidat' => 'numéro de candidat',
         'id_role' => 'rôle',

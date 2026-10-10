@@ -119,7 +119,7 @@ h3 {
     background: var(--barre-survol);
 }
 
-/* Partie droite : nom de l'utilisateur + bouton Déconnexion.
+/* Partie droite : menu "Profil" (nom, Mon profil, Déconnexion).
    margin-left: auto pousse ce bloc tout à droite de la barre. */
 .navbar .utilisateur {
     margin-left: auto;
@@ -177,6 +177,49 @@ h3 {
 }
 
 .deroulant ul a:hover {
+    background: var(--fond);
+}
+
+/* Menu "Profil" (à droite de la barre) : titre sur fond bleu, comme un
+   bouton. ".navbar" est répété pour que ces règles passent avant celles
+   des autres titres du menu (fond gris au survol). */
+.navbar .menu-profil summary {
+    background: var(--bleu);
+}
+
+.navbar .menu-profil summary:hover {
+    background: var(--bleu-fonce);
+}
+
+/* La liste s'ouvre alignée sur le bord DROIT du bouton : alignée à gauche,
+   elle sortirait de l'écran. */
+.menu-profil ul {
+    left: auto;
+    right: 0;
+}
+
+/* Nom de l'utilisateur : simple texte gris, séparé des liens par un trait. */
+.menu-profil .nom-utilisateur {
+    padding: 0.5rem 1rem;
+    color: var(--texte-doux);
+    border-bottom: 1px solid var(--bordure);
+}
+
+/* Le bouton Déconnexion a la même apparence que les liens de la liste. */
+.menu-profil ul button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    color: var(--texte);
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.menu-profil ul button:hover {
     background: var(--fond);
 }
 
@@ -492,6 +535,30 @@ textarea:focus {
 .card h2,
 .card h3 {
     margin-top: 0;
+}
+
+/* Fiche d'informations en lecture seule (page Profil) : l'intitulé à
+   gauche, la valeur à droite, une ligne par information. */
+.fiche {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0;
+}
+
+.fiche dt {
+    font-weight: bold;
+}
+
+.fiche dd {
+    margin: 0;
+}
+
+/* Petit écran : l'intitulé passe au-dessus de la valeur. */
+@media (max-width: 480px) {
+    .fiche {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Grille de raccourcis de la page d'accueil (/menu) : autant de colonnes

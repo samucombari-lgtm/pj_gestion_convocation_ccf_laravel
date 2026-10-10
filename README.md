@@ -45,6 +45,7 @@ contrôleurs ; le projet fournit les vues Blade et ses règles, dans
 | `/login` | Connexion, puis redirection vers `/menu` |
 | `/register` | Inscription publique |
 | `/forgot-password` | Demande d'un lien de réinitialisation du mot de passe (lien valable 60 minutes, utilisable une seule fois) |
+| `/profil` | Page « Mon profil » (tous les rôles, menu « Profil » en haut à droite) : informations du compte en lecture seule et changement du mot de passe |
 
 **Connexion** : seul un compte au statut `A` peut se connecter. Messages
 affichés :
@@ -66,6 +67,15 @@ l'administrateur.
 
 **Mot de passe oublié** : la réinitialisation ne change que le mot de
 passe ; un compte Inactif ou Banni reste refusé à la connexion.
+
+**Page Profil** : chaque utilisateur connecté voit son nom, son prénom,
+son e-mail, son rôle, son statut, son genre, sa classe et (pour un
+candidat) son numéro de candidat, sans pouvoir les modifier. Il peut
+changer son mot de passe en saisissant le mot de passe actuel, puis le
+nouveau deux fois (mêmes règles qu'à l'inscription : 8 caractères
+minimum). Le formulaire est envoyé à la route Fortify `PUT /user/password`
+(fonction `updatePasswords()`, action
+`app/Actions/Fortify/UpdateUserPassword.php`).
 
 Les messages (validation, connexion, e-mail de réinitialisation) sont en
 français : fichiers `lang/fr/` et `lang/fr.json`.
@@ -179,8 +189,8 @@ Fournie séparément (documents Word, avec page de garde et sommaire) :
 
 - Authentification par **Laravel Fortify**, installé dans le projet
   existant (pas de kit de démarrage, pas de `fortify:install`) ; seules
-  l'inscription et la réinitialisation du mot de passe sont activées
-  (`config/fortify.php`). Le contrôle du statut est fait dans
+  l'inscription, la réinitialisation et le changement du mot de passe sont
+  activés (`config/fortify.php`). Le contrôle du statut est fait dans
   `Fortify::authenticateUsing()`, l'inscription dans
   `app/Actions/Fortify/CreateNewUser.php`, et
   `app/Http/Responses/RegisterResponse.php` déconnecte le nouveau compte
