@@ -68,14 +68,25 @@
         @endif
     </ul>
 
-    {{-- À droite : nom de l'utilisateur connecté et bouton Déconnexion.
+    {{-- À droite : menu "Profil", le même pour les 5 rôles (il est en
+         dehors des @if ci-dessus). C'est aussi un <details> : il s'ouvre au
+         clic, sans JavaScript. Il contient le nom de l'utilisateur, le lien
+         vers sa page Profil et le bouton Déconnexion.
          La déconnexion DOIT être un formulaire POST avec @csrf (route
          Fortify "logout") : un simple lien (GET) ne fonctionnerait pas. --}}
     <div class="utilisateur">
-        <span>{{ auth()->user()->name }}</span>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-primary">Déconnexion</button>
-        </form>
+        <details class="deroulant menu-profil">
+            <summary>Profil</summary>
+            <ul>
+                <li class="nom-utilisateur">{{ auth()->user()->name }}</li>
+                <li><a href="{{ route('profil') }}">Mon profil</a></li>
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit">Déconnexion</button>
+                    </form>
+                </li>
+            </ul>
+        </details>
     </div>
 </header>

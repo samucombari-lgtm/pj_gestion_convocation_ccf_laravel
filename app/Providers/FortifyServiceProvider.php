@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Actions\Fortify\UpdateUserPassword;
 use App\Http\Responses\RegisterResponse;
 use App\Models\Genre;
 use App\Models\User;
@@ -36,6 +37,10 @@ class FortifyServiceProvider extends ServiceProvider
         // ----- Actions (la logique métier) -----
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        // Changement du mot de passe depuis la page Profil (PUT /user/password).
+        // Après succès, Fortify revient sur la page précédente (/profil) avec
+        // session('status') = 'password-updated'.
+        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
 
         // ----- Vues -----
         // Fortify définit la route GET /login (nommée "login") et affiche

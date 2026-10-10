@@ -8,6 +8,7 @@ use App\Http\Controllers\JuryController;
 use App\Http\Controllers\LieuController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ParametrageController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\UtilisateurController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,8 @@ Route::get('/', [HomeController::class, 'index'])->name('accueil');
 //   POST /logout    (nom "logout")   : déconnexion, puis retour sur "/"
 //   GET  /register  (nom "register") : formulaire d'inscription (auth.register)
 //   POST /register                   : crée le compte (CAND, statut 'I')
+//   PUT  /user/password (nom "user-password.update") : changement du mot
+//                     de passe depuis la page Profil (utilisateur connecté)
 // "php artisan route:list" affiche toutes ces routes.
 
 /*
@@ -45,6 +48,11 @@ Route::get('/', [HomeController::class, 'index'])->name('accueil');
 
 Route::middleware('auth')->group(function () {
     Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+
+    // Page Profil, pour tous les rôles : informations du compte (lecture
+    // seule) et formulaire de changement du mot de passe (envoyé à la
+    // route Fortify PUT /user/password).
+    Route::get('/profil', [ProfilController::class, 'show'])->name('profil');
 
     // Page CAND : liste des convocations du candidat connecté
     Route::get('/ma-convocation', [ConvocationController::class, 'index'])->name('convocation');

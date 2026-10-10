@@ -169,12 +169,15 @@ return [
     |
     */
 
-    // On n'active QUE les deux fonctionnalités utiles au projet :
-    //  - registration()   : inscription (/register) ;
-    //  - resetPasswords() : mot de passe oublié (/forgot-password, /reset-password).
+    // On n'active QUE les fonctionnalités utiles au projet :
+    //  - registration()    : inscription (/register) ;
+    //  - resetPasswords()  : mot de passe oublié (/forgot-password, /reset-password) ;
+    //  - updatePasswords() : changement du mot de passe depuis la page
+    //    Profil (PUT /user/password). Elle ne crée ni vue ni table : le
+    //    formulaire est dans notre vue profil/show.blade.php.
     // Désactivées volontairement :
-    //  - updateProfileInformation() / updatePasswords() : pas de page
-    //    "mon profil" dans le projet ;
+    //  - updateProfileInformation() : l'identité, l'e-mail, le rôle et le
+    //    statut ne sont modifiables que par l'administrateur ;
     //  - twoFactorAuthentication() et passkeys() : elles ont besoin de
     //    colonnes / tables qui n'existent pas dans la base du professeur
     //    (et on ne crée jamais de migration) ;
@@ -183,6 +186,7 @@ return [
     'features' => [
         Features::registration(),
         Features::resetPasswords(),
+        Features::updatePasswords(),
     ],
 
 ];
