@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use App\Models\Role;
 use App\Models\Utilisateur;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
-// Composant Livewire de la page "Gestion des utilisateurs" (rôle ADMIN).
+// Composant Livewire de la page "Gestion des utilisateurs"
+// (actions utilisateurs.viewAny et utilisateurs.update).
 //
 // Un composant Livewire = une classe PHP (ici) + une vue Blade
 // (resources/views/livewire/gestion-comptes.blade.php). Les propriétés
@@ -32,28 +34,25 @@ class GestionComptes extends Component
     public bool $erreur = false;
 
     // IMPORTANT (sécurité) : chaque clic sur un bouton Livewire est une
-    // NOUVELLE requête HTTP envoyée au serveur. Vérifier le rôle une seule
-    // fois à l'affichage de la page ne suffit donc pas : quelqu'un pourrait
-    // envoyer ces requêtes à la main. On revérifie donc ADMIN dans mount()
-    // (premier affichage) ET au début de chaque action.
-    private function verifierAdmin(): void
-    {
-        if (! auth()->user()?->hasRole('ADMIN')) {
-            abort(403);
-        }
-    }
+    // NOUVELLE requête HTTP envoyée au serveur (vers /livewire/update), qui
+    // ne repasse pas par le middleware can: de la route de la page.
+    // Vérifier les droits une seule fois à l'affichage ne suffit donc pas :
+    // quelqu'un pourrait envoyer ces requêtes à la main. On revérifie dans
+    // mount() (premier affichage) ET au début de chaque action.
+    // Gate::authorize('action') arrête tout avec une erreur 403 si le rôle
+    // de l'utilisateur connecté n'a pas cette action dans mcd_autoriser.
 
     // mount() est appelée une seule fois, quand le composant s'affiche
     // pour la première fois (l'équivalent d'un constructeur).
     public function mount(): void
     {
-        $this->verifierAdmin();
+        Gate::authorize('utilisateurs.viewAny');
     }
 
     // Change le statut d'un compte : 'A' Actif, 'I' Inactif, 'B' Banni.
     public function changerStatut(int $id, string $code): void
     {
-        $this->verifierAdmin();
+        Gate::authorize('utilisateurs.update');
 
         if (! in_array($code, self::STATUTS, true)) {
             $this->afficher('Statut inconnu.', true);
@@ -78,7 +77,7 @@ class GestionComptes extends Component
     // Change le rôle d'un compte (un des rôles de mcd_roles).
     public function changerRole(int $id, $idRole): void
     {
-        $this->verifierAdmin();
+        Gate::authorize('utilisateurs.update');
 
         // On vérifie que le rôle choisi existe vraiment en base : la valeur
         // vient du navigateur, elle peut avoir été modifiée.
@@ -133,9 +132,15 @@ class GestionComptes extends Component
             $requete->where('code_statut', 'I');
         }
 
+        // $peutModifier : calculé UNE fois ici plutôt qu'avec @can sur
+        // chaque ligne du tableau (une requête SQL par ligne, rejouée à
+        // chaque frappe dans la recherche). Il sert seulement à afficher
+        // ou cacher les boutons : la vraie protection reste le
+        // Gate::authorize() au début de chaque action.
         return view('livewire.gestion-comptes', [
             'utilisateurs' => $requete->get(),
             'roles' => Role::orderBy('nom')->get(),
+            'peutModifier' => Gate::allows('utilisateurs.update'),
         ]);
     }
 }

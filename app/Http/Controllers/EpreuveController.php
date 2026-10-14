@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class EpreuveController extends Controller
 {
-    // Petite méthode privée pour ne pas répéter le même contrôle
-    // hasRole('GEST') dans chacune des 3 méthodes ci-dessous.
-    private function ensureGestionnaire(): void
-    {
-        if (! auth()->user()->hasRole('GEST')) {
-            abort(403);
-        }
-    }
+    // Les droits d'accès ne sont plus vérifiés ici : chaque route de ce
+    // contrôleur est protégée dans routes/web.php par middleware('can:...'),
+    // qui renvoie une erreur 403 si le rôle n'a pas l'action dans
+    // mcd_autoriser.
 
     // Liste des épreuves déjà créées.
     public function index()
     {
-        $this->ensureGestionnaire();
-
         // with('lieu') précharge le lieu de chaque épreuve en une seule
         // requête groupée, pour éviter le problème du N+1 dans la vue
         // (comme pour les pages candidat/jury vues précédemment).
@@ -33,8 +27,6 @@ class EpreuveController extends Controller
     // Affiche le formulaire de création d'une nouvelle épreuve.
     public function create()
     {
-        $this->ensureGestionnaire();
-
         // La liste déroulante des lieux existants, pour le <select> du
         // formulaire. Si le gestionnaire ajoute un nouveau lieu (via le
         // petit formulaire séparé, cf. LieuController), il sera de
@@ -47,8 +39,6 @@ class EpreuveController extends Controller
     // Enregistre la nouvelle épreuve.
     public function store(Request $request)
     {
-        $this->ensureGestionnaire();
-
         // $request->validate() vérifie chaque champ et renvoie
         // automatiquement en arrière (avec les erreurs et les valeurs
         // déjà saisies) si quelque chose ne va pas - on n'a jamais à
@@ -97,8 +87,6 @@ class EpreuveController extends Controller
     // montre TOUS les candidats et TOUS les jurys d'UNE SEULE épreuve.
     public function convocations(Epreuve $epreuve)
     {
-        $this->ensureGestionnaire();
-
         // On précharge son lieu (une seule requête en plus, pas grave ici
         // puisqu'il n'y a qu'une épreuve sur cette page, donc pas de N+1).
         $epreuve->load('lieu');

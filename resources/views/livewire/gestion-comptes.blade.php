@@ -55,11 +55,18 @@
                         {{-- wire:change : dès qu'on choisit un autre rôle,
                              on appelle changerRole(id, nouveau rôle).
                              $event.target.value = la valeur choisie. --}}
-                        <select wire:change="changerRole({{ $utilisateur->id }}, $event.target.value)">
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->id }}" @selected($role->id === $utilisateur->id_role)>{{ $role->nom }}</option>
-                            @endforeach
-                        </select>
+                        {{-- $peutModifier vient de render() (action
+                             utilisateurs.update) : sans ce droit, on
+                             affiche le rôle en simple texte. --}}
+                        @if ($peutModifier)
+                            <select wire:change="changerRole({{ $utilisateur->id }}, $event.target.value)">
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}" @selected($role->id === $utilisateur->id_role)>{{ $role->nom }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            {{ $utilisateur->role->nom }}
+                        @endif
                     </td>
                     <td>
                         {{ $utilisateur->statut->nom }}
@@ -79,6 +86,7 @@
                              div.actions : boutons côte à côte sur une ligne.
                              Couleurs : Activer bleu, Désactiver gris,
                              Bannir rouge, Modifier blanc. --}}
+                        @if ($peutModifier)
                         <div class="actions">
                             @if ($utilisateur->code_statut !== 'A')
                                 <button type="button" class="btn btn-primary btn-petit" wire:click="changerStatut({{ $utilisateur->id }}, 'A')">Activer</button>
@@ -91,6 +99,7 @@
                             @endif
                             <a class="btn btn-petit" href="{{ route('utilisateurs.edit', $utilisateur) }}">Modifier</a>
                         </div>
+                        @endif
                     </td>
                 </tr>
             @empty

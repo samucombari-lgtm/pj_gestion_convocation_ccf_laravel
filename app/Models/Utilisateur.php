@@ -84,4 +84,21 @@ class Utilisateur extends Model
     {
         return $this->belongsTo(User::class, 'id', 'id');
     }
+
+    // ----- Autorisations -----
+
+    // Vrai si le rôle de cet utilisateur a l'action $permission dans
+    // mcd_autoriser (ex. hasPermission('epreuves.create')).
+    // Une seule requête SQL : "existe-t-il un rôle, celui de cet
+    // utilisateur, qui possède une permission portant ce nom ?".
+    // whereHas filtre sur une relation, exists() renvoie true/false
+    // sans charger les lignes.
+    public function hasPermission(string $permission): bool
+    {
+        return $this->role()
+            ->whereHas('permissions', function ($requete) use ($permission) {
+                $requete->where('nom', $permission);
+            })
+            ->exists();
+    }
 }

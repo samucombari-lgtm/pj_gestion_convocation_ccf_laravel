@@ -12,7 +12,9 @@
         <p class="alert alert-success">{{ session('success') }}</p>
     @endif
 
-    <p><a class="btn btn-primary" href="{{ route('utilisateurs.create') }}">+ Créer un utilisateur</a></p>
+    @can('utilisateurs.create')
+        <p><a class="btn btn-primary" href="{{ route('utilisateurs.create') }}">+ Créer un utilisateur</a></p>
+    @endcan
 
     {{-- Le tableau des comptes est un composant Livewire (recherche,
          filtre "en attente", boutons de statut, changement de rôle sans

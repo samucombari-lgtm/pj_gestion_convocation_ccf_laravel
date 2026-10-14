@@ -37,19 +37,14 @@ class User extends Authenticatable
         return $this->hasOne(Utilisateur::class, 'id', 'id');
     }
 
-    // Petit raccourci pratique qu'on va utiliser partout dans les vues
-    public function hasRole(string $code): bool
+    // L'utilisateur connecté (auth()->user()) est un User (mcd_users),
+    // mais le rôle est porté par sa fiche Utilisateur (mcd_utilisateurs).
+    // On délègue donc la question à Utilisateur::hasPermission().
+    // Un compte sans fiche Utilisateur n'a aucune permission (false).
+    // C'est cette méthode qu'appellent les Gates définies dans
+    // AppServiceProvider (middleware can:, @can, Gate::authorize).
+    public function hasPermission(string $permission): bool
     {
-        return $this->utilisateur && $this->utilisateur->role->code === $code;
-    }
-
-    // Décision du professeur : l'ancien rôle JURY est remplacé par deux
-    // rôles, JURY_ENS (jury enseignant) et JURY_PRO (jury professionnel).
-    // Les pages jury sont les mêmes pour les deux : plutôt que d'écrire
-    // hasRole('JURY_ENS') || hasRole('JURY_PRO') à chaque endroit (et
-    // risquer d'en oublier un), on regroupe le test ici, une seule fois.
-    public function isJury(): bool
-    {
-        return $this->hasRole('JURY_ENS') || $this->hasRole('JURY_PRO');
+        return $this->utilisateur?->hasPermission($permission) ?? false;
     }
 }
