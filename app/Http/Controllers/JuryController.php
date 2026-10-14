@@ -10,14 +10,13 @@ class JuryController extends Controller
     // mcd_former représente la composition d'un panel de jury (qui siège
     // dans quel panel), pas une relation pédagogique "a formé cet élève".
     // Si ce n'est pas le cas, les deux méthodes ci-dessous seront à revoir.
+    //
+    // Accès : middleware('can:planning.viewAny') et
+    // middleware('can:evaluations.viewAny') dans routes/web.php.
 
     // "Mon planning de jury" : les épreuves couvertes par mon ou mes panels.
     public function planning()
     {
-        if (! auth()->user()->isJury()) {
-            abort(403);
-        }
-
         // Tous les panels dont je fais partie (table pivot mcd_former),
         // avec pour chacun les épreuves affectées (table pivot
         // mcd_affecter) et le lieu de chaque épreuve. Les 3 relations
@@ -49,10 +48,6 @@ class JuryController extends Controller
     // (id_jury) est un des panels dont je fais partie.
     public function candidats()
     {
-        if (! auth()->user()->isJury()) {
-            abort(403);
-        }
-
         // On ne récupère ici que les identifiants des panels dont je fais
         // partie (pas les épreuves cette fois, pas besoin).
         $idsDeMesPanels = auth()->user()->utilisateur

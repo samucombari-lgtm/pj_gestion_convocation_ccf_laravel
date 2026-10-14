@@ -11,12 +11,9 @@ class LieuController extends Controller
     // crée que depuis le petit formulaire intégré à la page "Créer une
     // session d'épreuves" (voir gestion/epreuves/create.blade.php). On
     // ajoutera une gestion complète des lieux plus tard si besoin.
+    // Accès : middleware('can:lieux.create') dans routes/web.php.
     public function store(Request $request)
     {
-        if (! auth()->user()->hasRole('GEST')) {
-            abort(403);
-        }
-
         // Les champs de ce formulaire s'appellent "lieu_code", "lieu_nom",
         // "lieu_adresse" (et pas juste "code", "nom") : la page de
         // création d'épreuve contient DEUX formulaires (épreuve + lieu).

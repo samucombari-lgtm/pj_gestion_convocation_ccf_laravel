@@ -27,18 +27,14 @@ class ParametrageController extends Controller
     // (avec des if/match) : plus court de quelques lignes, mais plus dur à
     // lire. Trois petites méthodes explicites restent plus simples.
 
-    private function ensureAdmin(): void
-    {
-        if (! auth()->user()->hasRole('ADMIN')) {
-            abort(403);
-        }
-    }
+    // Les droits d'accès ne sont plus vérifiés ici : chaque route de ce
+    // contrôleur est protégée dans routes/web.php par middleware('can:...'),
+    // qui renvoie une erreur 403 si le rôle n'a pas l'action dans
+    // mcd_autoriser.
 
     // Affiche les 3 listes + les 3 formulaires d'ajout.
     public function index()
     {
-        $this->ensureAdmin();
-
         return view('admin.parametrage', [
             'roles' => Role::orderBy('nom')->get(),
             'statuts' => Statut::orderBy('nom')->get(),
@@ -59,12 +55,10 @@ class ParametrageController extends Controller
 
     public function storeRole(Request $request)
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             // Le code est obligatoire ici même s'il peut être NULL en base :
-            // c'est lui que hasRole('ADMIN') compare, un rôle sans code
-            // serait inutilisable dans l'application.
+            // l'application identifie les rôles par leur code (ex. le rôle
+            // CAND donné à l'inscription), un rôle sans code serait inutilisable.
             // alpha_dash = lettres, chiffres, "-" et "_" seulement.
             'role_code' => ['required', 'alpha_dash', 'max:10', 'unique:mcd_roles,code'],
             'role_nom' => ['required', 'string', 'max:100', 'unique:mcd_roles,nom'],
@@ -86,8 +80,6 @@ class ParametrageController extends Controller
 
     public function storeStatut(Request $request)
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             // size:1 car la colonne est un CHAR(1) ; alpha = une lettre.
             'statut_code' => ['required', 'alpha', 'size:1', 'unique:mcd_statuts,code'],
@@ -111,8 +103,6 @@ class ParametrageController extends Controller
 
     public function storeGenre(Request $request)
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             'genre_code' => ['required', 'alpha', 'size:1', 'unique:mcd_genres,code'],
             'genre_nom' => ['required', 'string', 'max:100', 'unique:mcd_genres,nom'],

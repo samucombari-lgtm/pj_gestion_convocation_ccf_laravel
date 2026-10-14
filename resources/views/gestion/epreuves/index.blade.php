@@ -12,7 +12,12 @@
         <p class="alert alert-success">{{ session('success') }}</p>
     @endif
 
-    <p><a class="btn btn-primary" href="{{ route('epreuves.create') }}">+ Créer une session d'épreuves</a></p>
+    {{-- @can : chaque bouton n'est affiché que si l'utilisateur a
+         l'action correspondante (la route est de toute façon protégée
+         par le middleware can:). --}}
+    @can('epreuves.create')
+        <p><a class="btn btn-primary" href="{{ route('epreuves.create') }}">+ Créer une session d'épreuves</a></p>
+    @endcan
 
     {{-- .table-defilement : si la fenêtre est étroite, le tableau défile
          horizontalement au lieu d'élargir toute la page. --}}
@@ -43,8 +48,12 @@
                         {{-- Même présentation que la colonne Actions de la
                              gestion des comptes : petits boutons côte à côte. --}}
                         <div class="actions">
-                            <a class="btn btn-petit" href="{{ route('epreuves.affecter', $epreuve) }}">Affecter un jury</a>
-                            <a class="btn btn-petit" href="{{ route('epreuves.convocations', $epreuve) }}">Voir les convocations</a>
+                            @can('epreuves.update')
+                                <a class="btn btn-petit" href="{{ route('epreuves.affecter', $epreuve) }}">Affecter un jury</a>
+                            @endcan
+                            @can('convocations.viewAny')
+                                <a class="btn btn-petit" href="{{ route('epreuves.convocations', $epreuve) }}">Voir les convocations</a>
+                            @endcan
                         </div>
                     </td>
                 </tr>

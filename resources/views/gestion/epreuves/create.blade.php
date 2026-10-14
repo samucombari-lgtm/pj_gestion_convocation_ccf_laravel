@@ -96,7 +96,10 @@
          validation concerne un champ "lieu_*", pour que l'utilisateur
          voie tout de suite pourquoi ça a échoué.
          La classe "form" est aussi sur le <details> : le bloc a la même
-         largeur et le même centrage que le formulaire de l'épreuve. --}}
+         largeur et le même centrage que le formulaire de l'épreuve.
+         @can('lieux.create') : le formulaire n'est affiché que si
+         l'utilisateur a le droit de créer un lieu. --}}
+    @can('lieux.create')
     <details class="card form" @if ($errors->first('lieu_code') || $errors->first('lieu_nom')) open @endif>
         <summary>+ Ajouter un nouveau lieu</summary>
 
@@ -132,4 +135,5 @@
             </div>
         </form>
     </details>
+    @endcan
 @endsection

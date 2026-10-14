@@ -15,12 +15,10 @@ class AffectationController extends Controller
     // sa propre logique de vérification (chevauchement + conflit
     // d'intérêt) assez conséquente pour mériter son propre fichier.
 
-    private function ensureGestionnaire(): void
-    {
-        if (! auth()->user()->hasRole('GEST')) {
-            abort(403);
-        }
-    }
+    // Les droits d'accès ne sont plus vérifiés ici : chaque route de ce
+    // contrôleur est protégée dans routes/web.php par middleware('can:...'),
+    // qui renvoie une erreur 403 si le rôle n'a pas l'action dans
+    // mcd_autoriser.
 
     // GET /gestion/epreuves/{epreuve}/affecter
     // $epreuve est injecté automatiquement par Laravel à partir de l'id
@@ -28,8 +26,6 @@ class AffectationController extends Controller
     // Epreuve::findOrFail($id) nous-mêmes.
     public function create(Epreuve $epreuve)
     {
-        $this->ensureGestionnaire();
-
         // Panels déjà affectés à cette épreuve, avec leurs membres
         // préchargés (utile pour la vue, qui peut afficher qui est dans
         // chaque panel déjà en place).
@@ -51,8 +47,6 @@ class AffectationController extends Controller
     // POST /gestion/epreuves/{epreuve}/affecter
     public function store(Request $request, Epreuve $epreuve)
     {
-        $this->ensureGestionnaire();
-
         $data = $request->validate([
             'id_jury' => ['required', 'exists:mcd_jurys,id'],
         ], [

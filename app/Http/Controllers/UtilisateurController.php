@@ -18,30 +18,24 @@ class UtilisateurController extends Controller
     // toutes les routes de cette appli sont déjà déclarées à la main avec
     // un ->name(...) explicite (voir routes/web.php), donc pas d'ambiguïté
     // possible sur le nom réellement utilisé : on garde ce style partout.
-    private function ensureAdmin(): void
-    {
-        if (! auth()->user()->hasRole('ADMIN')) {
-            abort(403);
-        }
-    }
+    // Les droits d'accès ne sont plus vérifiés ici : chaque route de ce
+    // contrôleur est protégée dans routes/web.php par middleware('can:...'),
+    // qui renvoie une erreur 403 si le rôle n'a pas l'action dans
+    // mcd_autoriser.
 
     // Page "Gestion des utilisateurs". La liste elle-même (recherche,
     // filtre, boutons de statut, changement de rôle) est gérée par le
     // composant Livewire App\Livewire\GestionComptes, inclus dans la vue :
-    // le contrôleur se contente donc de vérifier le rôle et d'afficher
-    // la page.
+    // le contrôleur se contente donc d'afficher la page (l'accès est
+    // vérifié par middleware('can:utilisateurs.viewAny') dans routes/web.php).
     public function index()
     {
-        $this->ensureAdmin();
-
         return view('admin.utilisateurs.index');
     }
 
     // Formulaire de création.
     public function create()
     {
-        $this->ensureAdmin();
-
         return view('admin.utilisateurs.create', [
             'roles' => Role::orderBy('nom')->get(),
             'statuts' => Statut::orderBy('nom')->get(),
@@ -52,8 +46,6 @@ class UtilisateurController extends Controller
     // Enregistre un nouvel utilisateur.
     public function store(Request $request)
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             'nom' => ['required', 'string', 'max:50'],
             'prenom' => ['required', 'string', 'max:50'],
@@ -121,8 +113,6 @@ class UtilisateurController extends Controller
     // par Laravel à partir de l'id dans l'URL (route model binding).
     public function edit(Utilisateur $utilisateur)
     {
-        $this->ensureAdmin();
-
         // Précharge le compte de connexion, pour afficher l'email en
         // lecture seule dans la vue (voir Utilisateur::compte() ci-dessus).
         $utilisateur->load('compte');
@@ -140,8 +130,6 @@ class UtilisateurController extends Controller
     // part si besoin), et l'email n'est pas modifiable depuis cette page.
     public function update(Request $request, Utilisateur $utilisateur)
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             'nom' => ['required', 'string', 'max:50'],
             'prenom' => ['required', 'string', 'max:50'],

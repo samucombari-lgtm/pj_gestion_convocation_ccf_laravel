@@ -34,8 +34,10 @@
             <dt>Classe</dt>
             <dd>{{ $utilisateur?->classe ?? '—' }}</dd>
 
-            {{-- Le numéro de candidat n'a de sens que pour un candidat. --}}
-            @if ($user->hasRole('CAND'))
+            {{-- Le numéro de candidat n'est affiché que s'il est renseigné
+                 (seuls les candidats en ont un). C'est de l'affichage, pas
+                 un droit d'accès : on teste la donnée, pas le rôle. --}}
+            @if ($utilisateur?->numero_candidat)
                 <dt>Numéro de candidat</dt>
                 <dd>{{ $utilisateur?->numero_candidat ?? '—' }}</dd>
             @endif
