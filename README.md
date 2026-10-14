@@ -8,6 +8,9 @@ Technologies : **Laravel 12**, PHP 8.3 minimum, MySQL / MariaDB,
 **Laravel Fortify** (authentification) et **Livewire** (page de gestion
 des comptes).
 
+Architecture (schémas fonctionnel et technique) : voir
+[docs/architecture.md](docs/architecture.md).
+
 ## Rôles gérés
 
 L'application gère 5 rôles (table `mcd_roles`) :
@@ -21,9 +24,28 @@ L'application gère 5 rôles (table `mcd_roles`) :
 | `JURY_PRO` | Jury professionnel        | Identique à `JURY_ENS` |
 
 L'ancien rôle unique `JURY` a été scindé en `JURY_ENS` et `JURY_PRO` (décision
-du professeur). Les deux rôles jury ont les mêmes pages et le même menu : le
-test est centralisé dans la méthode `User::isJury()`, qui renvoie
-`hasRole('JURY_ENS') || hasRole('JURY_PRO')`.
+du professeur). Les deux rôles jury ont les mêmes droits dans la table
+`mcd_autoriser`, donc les mêmes pages et le même menu.
+
+## Autorisations pilotées par la base
+
+Ce que chaque rôle peut faire n'est pas écrit dans le code mais dans deux
+tables :
+
+- `mcd_actions` : les 13 actions de l'application, nommées au format
+  Laravel `ressource.action` (`utilisateurs.viewAny`, `epreuves.create`,
+  `convocations.view`…) ;
+- `mcd_autoriser` : quelles actions chaque rôle a le droit de faire.
+
+Au démarrage, `app/Providers/AppServiceProvider.php` crée une Gate Laravel
+par action. Elles sont utilisées par `middleware('can:...')` dans
+`routes/web.php`, par `@can` dans les vues et par `Gate::authorize()` dans
+le composant Livewire. Un visiteur non connecté est redirigé vers
+`/login` ; un utilisateur connecté sans le droit reçoit une erreur 403.
+`/menu` et `/profil` sont ouvertes à tout utilisateur connecté.
+
+La matrice complète des droits est dans
+[docs/architecture.md](docs/architecture.md).
 
 **Rôle et statut sont indépendants :**
 
@@ -103,10 +125,10 @@ français : fichiers `lang/fr/` et `lang/fr.json`.
 4. **Ne pas exécuter `php artisan migrate`** : la structure de la base vient
    de scripts SQL, à importer dans cet ordre, un fichier à la fois, avec
    le client MySQL/MariaDB de votre choix :
-   1. `create_v0.sql.txt` — création des tables (fourni par l'enseignant
-      référent)
-   2. `init.sql` — données de référence (5 rôles, statuts, genres, compte
-      admin)
+   1. `create_v1.sql.txt` — création des tables (celles du MCD fourni par
+      l'enseignant référent, plus `mcd_actions` et `mcd_autoriser`)
+   2. `init.sql` — données de référence (5 rôles, actions et droits de
+      chaque rôle, statuts, genres, compte admin)
    3. `test.sql` — jeu de données réaliste pour le développement
    4. `ajout_password_reset.sql` — crée `mcd_password_reset_tokens` si elle
       n'existe pas
@@ -145,6 +167,13 @@ le script `migration_roles_jury.sql` (fourni séparément). Il :
 Ne jamais l'exécuter sur une base neuve : `init.sql` contient déjà les 5
 rôles.
 
+Si la base n'a pas encore les tables `mcd_actions` et `mcd_autoriser`,
+exécuter le script `ajout_autorisations.sql` (fourni séparément) **avant**
+de récupérer la nouvelle version du code : sans ces tables, toutes les
+pages protégées répondent 403, même pour l'administrateur. Ce script crée
+les deux tables et leurs triggers, puis ajoute les actions et les droits
+de chaque rôle ; il peut être rejoué sans risque.
+
 ## Organisation Git (projet réalisé à deux)
 
 Ce projet est développé par Combari Samuel et Evan. Règle à respecter :
@@ -166,8 +195,7 @@ Ce projet est développé par Combari Samuel et Evan. Règle à respecter :
 
 ## Comptes de test
 
-Compte administrateur de référence (créé par `init.sql`) :
-`admin@saintjo.local` / `password`.
+Des comptes de test sont fournis aux enseignants séparément.
 
 Voir la documentation d'installation (Annexe « Environnement de test »)
 pour la liste complète des comptes de test des 5 rôles et leurs mots de
@@ -199,17 +227,20 @@ Fournie séparément (documents Word, avec page de garde et sommaire) :
   `Utilisateur` (mcd_utilisateurs), `Role`, `Statut`, `Genre`, `Epreuve`,
   `Lieu`, `Jury`, `Passer` — `mcd_former` et `mcd_affecter` sont des tables
   pivots pures, gérées via `belongsToMany()` sans modèle dédié
-- Méthodes de contrôle d'accès dans `User` : `hasRole($code)` et
-  `isJury()` (vrai pour `JURY_ENS` et `JURY_PRO`)
-- Menu affiché dynamiquement selon le rôle de l'utilisateur connecté :
+- Contrôle d'accès par permissions : `User::hasPermission($action)`
+  délègue à `Utilisateur::hasPermission()`, qui cherche l'action parmi
+  celles du rôle (modèle `Permission`, table `mcd_actions`, pivot
+  `mcd_autoriser`)
+- Menu affiché dynamiquement selon les droits de l'utilisateur connecté
+  (`@can`) :
   - `ADMIN` : Gestion des utilisateurs, Paramétrage
   - `GEST` : Créer une session d'épreuves, Affecter les jurys, Envoyer les
     convocations
   - `CAND` : Ma convocation
   - `JURY_ENS` / `JURY_PRO` : Mon planning de jury, Mes candidats à évaluer
-- Middleware `auth` sur toutes les pages nécessitant une connexion ;
-  vérification du rôle dans chaque contrôleur (erreur 403 sinon) et du
-  statut du compte au login
+- Middleware `auth` sur toutes les pages nécessitant une connexion, puis
+  `can:ressource.action` sur chaque page protégée (erreur 403 sinon) ;
+  vérification du statut du compte au login
 - **Gestion des comptes (ADMIN)** : composant **Livewire**
   `app/Livewire/GestionComptes.php`, vue
   `resources/views/livewire/gestion-comptes.blade.php`. Il permet la
@@ -217,8 +248,8 @@ Fournie séparément (documents Word, avec page de garde et sommaire) :
   Inactifs), les boutons Activer / Désactiver / Bannir et le changement de
   rôle, sans rechargement de la page. L'administrateur connecté ne peut ni
   modifier son propre statut ni retirer son propre rôle ADMIN (même règle
-  dans le formulaire « Modifier »). Le rôle ADMIN est revérifié à chaque
-  action (erreur 403 sinon)
+  dans le formulaire « Modifier »). Les droits sont revérifiés à chaque
+  action avec `Gate::authorize()` (erreur 403 sinon)
 - **db2laravel** : outil interne fourni par l'enseignant référent
   (`php artisan db2laravel --models`), qui génère des classes de base
   `app/Models/Base/*Base.php` à partir de la structure réelle de la base
