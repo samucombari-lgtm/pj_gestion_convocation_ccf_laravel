@@ -52,4 +52,15 @@ class User extends Authenticatable
     {
         return $this->hasRole('JURY_ENS') || $this->hasRole('JURY_PRO');
     }
+
+    // L'utilisateur connecté (auth()->user()) est un User (mcd_users),
+    // mais le rôle est porté par sa fiche Utilisateur (mcd_utilisateurs).
+    // On délègue donc la question à Utilisateur::hasPermission().
+    // Un compte sans fiche Utilisateur n'a aucune permission (false).
+    // C'est cette méthode qu'appellent les Gates définies dans
+    // AppServiceProvider (middleware can:, @can, Gate::authorize).
+    public function hasPermission(string $permission): bool
+    {
+        return $this->utilisateur?->hasPermission($permission) ?? false;
+    }
 }
